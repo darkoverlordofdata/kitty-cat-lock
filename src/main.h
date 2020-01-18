@@ -48,6 +48,9 @@ struct Application
     XftColor color;   // color tp draw
     XftColor bgcolor;   // color tp draw
 
+    Bool flag1;
+    Bool flag2;
+    char** script;
     /* Application values */
     int verbosity;
     char* fontname;

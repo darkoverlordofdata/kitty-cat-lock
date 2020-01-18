@@ -32,6 +32,18 @@ Application* application_new(int argc, char **argv) {
     this->buf = calloc(BUFLEN, sizeof(char));
     this->passwd = calloc(BUFLEN, sizeof(char));
     application_args(this, argc, argv);
+
+    this->flag1 = False;//True;
+    this->flag2 = False;//True;
+    this->script = (char**)malloc(4 * sizeof(char *));
+    this->script[0] = strdup("/usr/local/bin/scrot");
+    this->script[1] = strdup("-d");
+    this->script[2] = strdup("1");
+
+
+            // if (fork() == 0) execv("/usr/local/bin/scrot", "-d 1");
+
+
     return this;
 }
 
@@ -253,6 +265,10 @@ int application_run(Application* this, char *user_name) {
     strcpy(this->pline, "");
     application_draw(this);
 
+    if (this->flag1) {
+        this->flag1 = False;
+        if (fork() == 0) execv(this->script[0], this->script);
+    }
     while(this->running) {
         if(ev.type == KeyRelease) {
             this->buf[0] = 0;
@@ -262,6 +278,11 @@ int application_run(Application* this, char *user_name) {
             application_set_display(this, this->panel);
             inactive = timeout;
             application_draw(this);
+            if (this->flag2) {
+                this->flag2 = False;
+                if (fork() == 0) execv(this->script[0], this->script);
+            }
+
             this->buf[0] = 0;
             num = XLookupString(&ev.xkey, this->buf, BUFLEN, &ksym, 0);
 
