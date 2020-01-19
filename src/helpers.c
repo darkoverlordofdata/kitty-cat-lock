@@ -10,7 +10,7 @@ void die(const char *errstr, ...) {
     va_list ap;
 
     va_start(ap, errstr);
-    vfprintf(stderr, "metalock: ", ap);
+    vfprintf(stderr, "catlock: ", ap);
     vfprintf(stderr, errstr, ap);
     va_end(ap);
     exit(EXIT_FAILURE);
@@ -36,7 +36,7 @@ const char * get_password() {
     struct passwd *pw;
 
     if(geteuid() != 0) {
-        die("cannot retrieve password entry (make sure to suid metalock)\n");
+        die("cannot retrieve password entry (make sure to suid catlock)\n");
     }
     pw = getpwuid(getuid());
     endpwent();
@@ -51,12 +51,13 @@ const char * get_password() {
 /**
  * generate the full path to image file
  *
- * ~/.local/share/wallpaperlock/$name.$type
+ * ~/.local/share/catlock/themes/$theme/$name.$type
  */
-int image_filename(char* theme, char* name, char* type, char* ret) {
+int image_filename(char* user, char* theme, char* name, char* type, char* ret) {
     strcpy(ret, "");
-    strcat(ret, PREFIX);
-    strcat(ret, "/share/metalock/themes/");
+    strcat(ret, "/home/");
+    strcat(ret, user);
+    strcat(ret, "/.local/share/catlock/themes/");
     strcat(ret, theme);
     strcat(ret, "/");
     strcat(ret, name);
@@ -64,7 +65,6 @@ int image_filename(char* theme, char* name, char* type, char* ret) {
     strcat(ret, type);
     return 0;
 
-    //return sprintf(ret, "home/%s/.local/share/wallpaperlock/%s.%s", user, name, type);
 }
 
 /**

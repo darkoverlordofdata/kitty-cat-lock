@@ -22,14 +22,17 @@
  * Application interface
  */
 typedef struct Application Application;
+typedef enum  { ApplicationDate, ApplicationPassword } ApplicationState;
+typedef enum  { ApplicationInit, ApplicationKeyPress, ApplicationEscape, ApplicationTimeout } ApplicationEvent;
+
 
 Application* application_new(int argc, char **argv);
 void    application_dispose(Application* this);
 int     application_args(Application* app, int argc, char **argv);
 void    application_fonts(Application* app, char* name);
 int     application_draw(Application* app);
-int     application_run(Application* app, char *user_name);
-void    application_set_display(Application* app, Window window);
+int     application_run(Application* app);
+void    application_event(Application* app, ApplicationEvent evt);
 void    application_image_files(Application* app);
 
 /**
@@ -48,9 +51,11 @@ struct Application
     XftColor color;   // color tp draw
     XftColor bgcolor;   // color tp draw
 
-    Bool flag1;
-    Bool flag2;
+    Bool scrot;
+    Bool one_time;
     char** script;
+    char* user_name;
+    char* full_name;
     /* Application values */
     int verbosity;
     char* fontname;
@@ -71,7 +76,7 @@ struct Application
     Bool running;
     unsigned int len;
     // const char *pws;
-    int state;
+    ApplicationState state;
     // char *line;
     char* uline;
     char* pline;

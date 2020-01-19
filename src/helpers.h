@@ -5,7 +5,6 @@ int file_exists(char* filename);
 const char * get_password();
 #endif
 
-int image_filename(char* theme, char* name, char* type, char* ret);
+int image_filename(char* user, char* theme, char* name, char* type, char* ret);
 int char_is_hex(char hexch);
 int string_is_hex(char* hexst);
-// void check_image_files(Application* app);

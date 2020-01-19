@@ -8,6 +8,7 @@
 
 int main(int argc, char **argv) {
 
+    // struct passwd *pw = getpwuid(getuid());
     Application* app = application_new(argc, argv);
 
     if(!(app->disp = XOpenDisplay(0))) { die("cannot open display\n"); }
@@ -111,12 +112,12 @@ int main(int argc, char **argv) {
     app->font_time = XftFontOpenName(app->disp, app->screen, app->fontname_time);
     app->font_date = XftFontOpenName(app->disp, app->screen, app->fontname_date);
 
-    application_set_display(app, app->top);
+    application_event(app, ApplicationInit);
     /* Set initial Username / Password State */
-    struct passwd *pw = getpwuid(getuid());
+    // struct passwd *pw = getpwuid(getuid());
 
     /* main loop */
-    application_run(app, pw->pw_gecos);
+    application_run(app);
     /** teardown */
 
     XUngrabPointer(app->disp, CurrentTime);
