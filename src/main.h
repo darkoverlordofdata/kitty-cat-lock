@@ -17,6 +17,10 @@
 #include <X11/keysym.h>
 #include <Imlib2.h>
 #include <Xft/Xft.h>
+#include "util/options.h"
+#include "util/font.h"
+#include "util/image.h"
+#include "util/display.h"
 
 /**
  * Application interface
@@ -24,6 +28,7 @@
 typedef struct Application Application;
 typedef enum  { ApplicationDate, ApplicationPassword } ApplicationState;
 typedef enum  { ApplicationInit, ApplicationKeyPress, ApplicationEscape, ApplicationTimeout } ApplicationEvent;
+
 
 
 Application* application_new(int argc, char **argv);
@@ -50,42 +55,47 @@ struct Application
     XftDraw *draw;    // drawable
     XftColor color;   // color tp draw
     XftColor bgcolor;   // color tp draw
+    Colormap cm;
+    Cursor invisible;
+    int screen;
 
-    Bool scrot;
-    Bool one_time;
+    /* Application values */
     char** script;
     char* user_name;
     char* full_name;
+    char* passwd;
+    unsigned int len;
+    char* buf;
+    Bool running;
+    ApplicationState state;
+    LockOptions* options;
+    LockFont* font;
+    LockImage* image0;
+    LockImage* image1;
+    LockDisplay* display;
+
     /* Application values */
+    Bool scrot;
+    Bool one_time;
     int verbosity;
+    char* theme_name;
     char* fontname;
     char* fontname_small;
     char* fontname_name;
     char* fontname_pwd;
     char* fontname_time;
     char* fontname_date;
-    char* theme_name;
     XftFont *font_small;
     XftFont *font_name;
     XftFont *font_pwd;
     XftFont *font_time;
     XftFont *font_date;
-    Colormap cm;
-    Cursor invisible;
-    int screen;
-    Bool running;
-    unsigned int len;
-    // const char *pws;
-    ApplicationState state;
-    // char *line;
     char* uline;
     char* pline;
     char* tline;
     char* dline;
     char* imgfn;
     char* boximgfn;
-    char* passwd;
-    char* buf;
 
 };
 

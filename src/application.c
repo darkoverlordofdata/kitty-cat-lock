@@ -90,12 +90,13 @@ void application_dispose(Application* this) {
  */
 int application_args(Application* this, int argc, char **argv) {
 
+// "-DVERSION=0.1.0 -DDEFAULT_THEME=badabing -DEMAIL==\"beyert AT SYMBOL fastmail DOT SYMBOL net\""
     int longindex = -1, opt, j;
 
     int h = 0, o = 0, c = 0, v = 0;
 
     this->verbosity = 0;
-    this->theme_name = strdup(DEFAULT_THEME);
+    this->theme_name = strdup("badabing");
     application_fonts(this, "bitstream vera sans-");
 
     if (this->verbosity > 1) { puts("process command line arguments...\n"); }
@@ -146,7 +147,7 @@ int application_args(Application* this, int argc, char **argv) {
     }
 
     if (v == 1) {
-        printf("catlock-%s, © 2020 Dark Overlord of Data\n", VERSION);
+        printf("catlock-%s, © 2020 Dark Overlord of Data\n", "0.1.0");
         printf("inspired by metalock-0.8.1, © 2012 Timothy Beyer\n");
         exit(0);
     }
@@ -161,8 +162,8 @@ int application_args(Application* this, int argc, char **argv) {
         puts("-a / --as_user            user name");
         puts("-v n / --verbosity n      verbosity level (default: 0)");
         puts("-f str / --font str       X11 quoted font name string");
-        puts("-t name / --theme name    theme name (default: " DEFAULT_THEME ")");
-        puts("\nmail bug reports and suggestions to " EMAIL);
+        puts("-t name / --theme name    theme name (default: badabing)");
+        puts("\nmail bug reports and suggestions to darkoverlordofdata@gmail.com" );
         exit(0);
     }
     return 0;
@@ -224,7 +225,6 @@ int application_args(Application* this, int argc, char **argv) {
  * @param this
  */
 int application_draw(Application* this) {
-    if (!this->running) return 0;
     time_t now = time(NULL);
     struct tm *t = localtime(&now);
     char* instruc = "Enter password";
