@@ -9,6 +9,7 @@
             "type": "gdb",
             "request": "launch",
             "target": "./catlock",
+            "arguments": "-a darko",
             "cwd": "${workspaceRoot}",
             "valuesFormatting": "parseText"
         }

@@ -1,4 +1,4 @@
-#include "main.h"
+#include "helpers.h"
 /**
  * misc helper functions
  */
@@ -53,17 +53,38 @@ const char * get_password() {
  *
  * ~/.local/share/catlock/themes/$theme/$name.$type
  */
-int image_filename(char* user, char* theme, char* name, char* type, char* ret) {
-    strcpy(ret, "");
-    strcat(ret, "/home/");
-    strcat(ret, user);
-    strcat(ret, "/.local/share/catlock/themes/");
-    strcat(ret, theme);
-    strcat(ret, "/");
-    strcat(ret, name);
-    strcat(ret, ".");
-    strcat(ret, type);
-    return 0;
+char* image_filename(char* str, char* user, char* theme, char* name, char* type) {
+    strcpy(str, "");
+    strcat(str, "/home/");
+    strcat(str, user);
+    strcat(str, "/.local/share/catlock/themes/");
+    strcat(str, theme);
+    strcat(str, "/");
+    strcat(str, name);
+    strcat(str, ".");
+    strcat(str, type);
+    return str;
+
+}
+
+/**
+ * generate the full path to calendar file
+ *
+ *  ex:    char* fn = calendar_filename("darko", "orage", "ics", &str);
+ *
+ *  ~/.local/share/orage/orage.ics
+ */
+char* calendar_filename(char* str, char* user, char* name, char* type) {
+    strcpy(str, "");
+    strcat(str, "/home/");
+    strcat(str, user);
+    strcat(str, "/.local/share/");
+    strcat(str, name);
+    strcat(str, "/");
+    strcat(str, name);
+    strcat(str, ".");
+    strcat(str, type);
+    return str;
 
 }
 

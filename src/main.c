@@ -3,8 +3,9 @@
  *
  */
 /* See LICENSE file for license details. */
-#include "main.h"
 #include "helpers.h"
+#include "application.h"
+
 
 int main(int argc, char **argv) {
 
@@ -81,7 +82,7 @@ int main(int argc, char **argv) {
     app->invisible = XCreatePixmapCursor(app->disp, pmap, pmap, &black, &black, 0, 0);
 
     for(app->len = 1000; app->len; app->len--) {
-        if(XGrabPointer(app->disp, root, False,
+        if(XGrabPointer(app->disp, root, false,
                       ButtonPressMask | ButtonReleaseMask | PointerMotionMask,
                       GrabModeAsync, GrabModeAsync, None, app->invisible, CurrentTime)
             == GrabSuccess)
@@ -90,7 +91,7 @@ int main(int argc, char **argv) {
     }
     if((app->running = app->running && (app->len > 0))) {
         for(app->len = 1000; app->len; app->len--) {
-            if(XGrabKeyboard(app->disp, root, True, GrabModeAsync, GrabModeAsync,
+            if(XGrabKeyboard(app->disp, root, true, GrabModeAsync, GrabModeAsync,
                         CurrentTime) == GrabSuccess)
                 break;
             usleep(100);
@@ -98,7 +99,7 @@ int main(int argc, char **argv) {
         app->running = (app->len > 0);
     }
     app->len = 0;
-    XSync(app->disp, False);
+    XSync(app->disp, false);
 
     app->font_name = XftFontOpenName(app->disp, app->screen, app->fontname_name);
     if (app->font_name == NULL) {

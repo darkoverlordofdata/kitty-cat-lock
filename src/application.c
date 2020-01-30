@@ -1,5 +1,5 @@
-#include "main.h"
-#include "helpers.h"
+#include "application.h"
+#include "calendar/calendar.h"
 
 #define BUFLEN 256
 /**
@@ -10,6 +10,7 @@ static const struct option longopts[] = {
     {"version", no_argument, NULL, 'V'},
     {"scrot", no_argument, NULL, 's'},
     {"one_time", no_argument, NULL, 'o'},
+    {"calendar", required_argument, NULL, 'c'},
     {"as_user", required_argument, NULL, 'a'},
     {"verbosity", required_argument, NULL, 'v'},
     {"font", required_argument, NULL, 'f'},
@@ -25,7 +26,7 @@ static const struct option longopts[] = {
  */
 Application* application_new(int argc, char **argv) {
     Application* this = calloc(1, sizeof(Application));
-    this->running = True;
+    this->running = true;
     this->uline = calloc(BUFLEN, sizeof(char));
     this->pline = calloc(BUFLEN, sizeof(char));
     this->tline = calloc(BUFLEN, sizeof(char));
@@ -34,14 +35,19 @@ Application* application_new(int argc, char **argv) {
     this->boximgfn = calloc(BUFLEN, sizeof(char));
     this->buf = calloc(BUFLEN, sizeof(char));
     this->passwd = calloc(BUFLEN, sizeof(char));
-    this->one_time = False;
-    this->scrot = False;
-
+    this->one_time = false;
+    this->scrot = false;
+    this->first = true;
     struct passwd *pw = getpwuid(getuid());
-
     this->user_name = strdup(pw->pw_name);
     this->full_name = strdup(pw->pw_gecos);
     application_args(this, argc, argv);
+    if (strcmp(this->calendar, "") == 0)
+        this->holidays = NULL;
+    else {
+        char s[255];
+        this->holidays = holidays_new(calendar_filename(s, this->user_name, this->calendar, "ics"));
+    }
     this->script = (char**)malloc(4 * sizeof(char *));
     this->script[0] = strdup("/usr/local/bin/scrot");
     this->script[1] = strdup("-d");
@@ -74,6 +80,8 @@ void application_dispose(Application* this) {
     free(this->script[2]);
     free(this->script[3]);
     free(this->script);
+    free(this->calendar);
+    holidays_dispose(this->holidays);
     free(this->user_name);
     free(this->full_name);
     free(this);
@@ -93,23 +101,24 @@ int application_args(Application* this, int argc, char **argv) {
 // "-DVERSION=0.1.0 -DDEFAULT_THEME=badabing -DEMAIL==\"beyert AT SYMBOL fastmail DOT SYMBOL net\""
     int longindex = -1, opt, j;
 
-    int h = 0, o = 0, c = 0, v = 0;
+    int h = 0, o = 0, v = 0;
 
     this->verbosity = 0;
     this->theme_name = strdup("badabing");
+    this->calendar = strdup("");
     application_fonts(this, "bitstream vera sans-");
 
     if (this->verbosity > 1) { puts("process command line arguments...\n"); }
 
-    while ((opt = getopt_long(argc, argv, "oshVt:v:f:a:", longopts, &longindex))
+    while ((opt = getopt_long(argc, argv, "oshVt:v:f:a:c:", longopts, &longindex))
           != -1) {
         j = 0;
         switch (opt) {
         case 's':
-            this->scrot = True;
+            this->scrot = true;
             break;
         case 'o':
-            this->one_time = True;
+            this->one_time = true;
             break;
         case 'h':
             h = 1;
@@ -118,7 +127,7 @@ int application_args(Application* this, int argc, char **argv) {
             v = 1;
             break;
         case 'c':
-            c = 1;
+            this->calendar = strdup(optarg);
             break;
         case 'C':
             o = 1;
@@ -160,6 +169,7 @@ int application_args(Application* this, int argc, char **argv) {
         puts("-o / --one_time           exit input loop on ESC");
         puts("-s / --scrot              take screen pics");
         puts("-a / --as_user            user name");
+        puts("-c / --calendar           calendar app, such as \"orage\"");
         puts("-v n / --verbosity n      verbosity level (default: 0)");
         puts("-f str / --font str       X11 quoted font name string");
         puts("-t name / --theme name    theme name (default: badabing)");
@@ -256,7 +266,6 @@ int application_draw(Application* this) {
         break;
 
     case ApplicationPassword:
-
         XftDrawString8(this->draw, &this->color, this->font_name, c,  480, (XftChar8 *)this->uline, strlen(this->uline));
         XftDrawRect(this->draw, &this->color, c1-1, 529, 302, 32);
         XftDrawRect(this->draw, &this->bgcolor, c1, 530, 300, 30);
@@ -264,13 +273,19 @@ int application_draw(Application* this) {
         XftDrawString8(this->draw, &this->color, this->font_small,  c2, 660, (XftChar8 *)instruc, strlen(instruc));
         break;
 
-    default: exit(1);
+    default: 
+        exit(1);
 
     }
 
     return 0;
 }
 
+void fn_iterate(Holiday* this)
+{
+    printf("%s: %d\n", this->description, this->date);
+
+}
 /**
  * Application Run
  *
@@ -278,10 +293,12 @@ int application_draw(Application* this) {
  * @param user_name
  */
 int application_run(Application* this) {
+    holidays_filter(this->holidays, 20210101, fn_iterate);
 
     /* how many characters of password to show visually */
     const int pass_num_show = 32;
     const int timeout = 1000;
+    
     XEvent ev;
     KeySym ksym;
     int num;
@@ -305,7 +322,7 @@ int application_run(Application* this) {
             application_event(this, ApplicationKeyPress);
             inactive = timeout;
             if (this->scrot) {
-                this->scrot = False;
+                this->scrot = false;
                 if (fork() == 0) execv(this->script[0], this->script);
             }
 
@@ -331,7 +348,13 @@ int application_run(Application* this) {
                 if (this->running == 0) { puts("Unlocking Screen..."); }
                 break;
             case XK_Escape:
-                // this->running = False;
+                if (this->state == ApplicationDate) break;
+
+                if (this->first) {
+                    this->first = false;
+                    break;
+                }
+                // this->running = false;
                 this->len = 0;
                 strcpy(this->pline, "");
                 application_event(this, ApplicationEscape);
@@ -422,7 +445,8 @@ void application_event(Application* this, ApplicationEvent evt)
         break;
 
     case ApplicationEscape:
-        if (this->one_time) this->running = False;
+        if (this->one_time) this->running = false;
+        if (this->state == ApplicationDate) break;
         this->state = ApplicationDate;
         this->active = this->top;
         XUnmapWindow(this->disp, this->panel);
@@ -448,29 +472,29 @@ void application_event(Application* this, ApplicationEvent evt)
 void application_image_files(Application* this)
 {
     if (*this->imgfn == '\0' || file_exists(this->imgfn) < 0)
-        image_filename(this->user_name, this->theme_name, "bg", "png", this->imgfn);
+        image_filename(this->imgfn, this->user_name, this->theme_name, "bg", "png");
     if (*this->imgfn == '\0' || file_exists(this->imgfn) < 0)
-        image_filename(this->user_name, this->theme_name, "bg", "jpg", this->imgfn);
+        image_filename(this->imgfn, this->user_name, this->theme_name, "bg", "jpg");
     if (*this->imgfn == '\0' || file_exists(this->imgfn) < 0)
-        image_filename(this->user_name, this->theme_name, "bg", "jpeg", this->imgfn);
+        image_filename(this->imgfn, this->user_name, this->theme_name, "bg", "jpeg");
     if (*this->imgfn == '\0' || file_exists(this->imgfn) < 0)
-        image_filename(this->user_name, this->theme_name, "bg", "xpm", this->imgfn);
+        image_filename(this->imgfn, this->user_name, this->theme_name, "bg", "xpm");
     if (*this->imgfn == '\0' || file_exists(this->imgfn) < 0)
-        image_filename(this->user_name, this->theme_name, "bg", "xpm.gz", this->imgfn);
+        image_filename(this->imgfn, this->user_name, this->theme_name, "bg", "xpm.gz");
 
     if (this->verbosity > 1)
         printf("background image filename: %s\n", this->imgfn);
 
     if (*this->boximgfn == '\0' || file_exists(this->boximgfn) < 0)
-        image_filename(this->user_name, this->theme_name, "box", "png", this->boximgfn);
+        image_filename(this->boximgfn, this->user_name, this->theme_name, "box", "png");
     if (*this->boximgfn == '\0' || file_exists(this->boximgfn) < 0)
-        image_filename(this->user_name, this->theme_name, "box", "jpg", this->boximgfn);
+        image_filename(this->boximgfn, this->user_name, this->theme_name, "box", "jpg");
     if (*this->boximgfn == '\0' || file_exists(this->boximgfn) < 0)
-        image_filename(this->user_name, this->theme_name, "box", "jpeg", this->boximgfn);
+        image_filename(this->boximgfn, this->user_name, this->theme_name, "box", "jpeg");
     if (*this->boximgfn == '\0' || file_exists(this->boximgfn) < 0)
-        image_filename(this->user_name, this->theme_name, "box", "xpm", this->boximgfn);
+        image_filename(this->boximgfn, this->user_name, this->theme_name, "box", "xpm");
     if (*this->boximgfn == '\0' || file_exists(this->boximgfn) < 0)
-        image_filename(this->user_name, this->theme_name, "box", "xpm.gz", this->boximgfn);
+        image_filename(this->boximgfn, this->user_name, this->theme_name, "box", "xpm.gz");
 
     if (this->verbosity > 1)
         printf("box image filename: %s\n\n", this->boximgfn);

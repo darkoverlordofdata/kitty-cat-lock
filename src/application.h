@@ -1,26 +1,26 @@
 #pragma once
-#define _XOPEN_SOURCE 500
+#include <assert.h>
 #include <ctype.h>
 #include <stdarg.h>
+#include <stdbool.h>
 #include <stdlib.h>
 #include <stdio.h>
-#include <assert.h>
-#include <unistd.h>
-#include <pwd.h>
 #include <string.h>
+#include <pwd.h>
+#include <unistd.h>
+
 #include <getopt.h>
-#include <time.h>
+
+#include <Imlib2.h>
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 #include <X11/xpm.h>
 #include <X11/extensions/dpms.h>
 #include <X11/keysym.h>
-#include <Imlib2.h>
 #include <Xft/Xft.h>
-#include "util/options.h"
-#include "util/font.h"
-#include "util/image.h"
-#include "util/display.h"
+
+#include "helpers.h"
+#include "calendar/calendar.h"
 
 /**
  * Application interface
@@ -46,37 +46,40 @@ void    application_image_files(Application* app);
 struct Application
 {
     /* X11 values */
-    Display *disp;    // application display
+    Display *disp;      // application display
     int width;
     int height;
-    Window active;    // the active window
-    Window top;       // top level window
-    Window panel;     // drawing panel
-    XftDraw *draw;    // drawable
-    XftColor color;   // color tp draw
+    Window active;      // the active window
+    Window top;         // top level window
+    Window panel;       // drawing panel
+    XftDraw *draw;      // drawable
+    XftColor color;     // color to draw
     XftColor bgcolor;   // color tp draw
     Colormap cm;
     Cursor invisible;
     int screen;
+    bool first;         // ignore 1st esc key press
 
     /* Application values */
+    char* calendar;
+    Holidays* holidays;
     char** script;
     char* user_name;
     char* full_name;
     char* passwd;
     unsigned int len;
     char* buf;
-    Bool running;
+    bool running;
     ApplicationState state;
-    LockOptions* options;
-    LockFont* font;
-    LockImage* image0;
-    LockImage* image1;
-    LockDisplay* display;
+    // AppOptions* options;
+    // AppFont* font;
+    // AppImage* image0;
+    // AppImage* image1;
+    // AppDisplay* display;
 
     /* Application values */
-    Bool scrot;
-    Bool one_time;
+    bool scrot;
+    bool one_time;
     int verbosity;
     char* theme_name;
     char* fontname;

@@ -18,10 +18,7 @@ include ( CMakeToolsHelpers OPTIONAL )
 #
 #   application source
 #
-list ( APPEND C_SOURCES src/util/display.c )
-list ( APPEND C_SOURCES src/util/font.c )
-list ( APPEND C_SOURCES src/util/image.c )
-list ( APPEND C_SOURCES src/util/options.c )
+list ( APPEND C_SOURCES src/calendar/calendar.c )
 list ( APPEND C_SOURCES src/application.c )
 list ( APPEND C_SOURCES src/helpers.c )
 list ( APPEND C_SOURCES src/main.c )
@@ -46,6 +43,7 @@ add_executable ( ${PROJECT_NAME} ${C_SOURCES} ${RESOURCES} )
 add_custom_command(TARGET ${PROJECT_NAME} 
                    POST_BUILD COMMAND 
                    ${CMAKE_COMMAND} -E copy $<TARGET_FILE:${PROJECT_NAME}> .. )
+                                      
 target_link_libraries ( ${PROJECT_NAME} c X11 Xext Xpm Imlib2 Xft crypt  )
 install (TARGETS ${PROJECT_NAME} RUNTIME DESTINATION . )
 
