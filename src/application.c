@@ -9,7 +9,6 @@ static const struct option longopts[] = {
     {"help", no_argument, NULL, 'h'},
     {"version", no_argument, NULL, 'V'},
     {"scrot", no_argument, NULL, 's'},
-    {"one_time", no_argument, NULL, 'o'},
     {"calendar", required_argument, NULL, 'c'},
     {"as_user", required_argument, NULL, 'a'},
     {"verbosity", required_argument, NULL, 'v'},
@@ -35,7 +34,6 @@ Application* application_new(int argc, char **argv) {
     this->boximgfn = calloc(BUFLEN, sizeof(char));
     this->buf = calloc(BUFLEN, sizeof(char));
     this->passwd = calloc(BUFLEN, sizeof(char));
-    this->one_time = false;
     this->scrot = false;
     this->first = true;
     struct passwd *pw = getpwuid(getuid());
@@ -117,9 +115,6 @@ int application_args(Application* this, int argc, char **argv) {
         case 's':
             this->scrot = true;
             break;
-        case 'o':
-            this->one_time = true;
-            break;
         case 'h':
             h = 1;
             break;
@@ -162,18 +157,17 @@ int application_args(Application* this, int argc, char **argv) {
     }
 
     if (h == 1) {
-        puts("Usage: binglock [option]\n");
+        puts("Usage: catlock [option]\n");
 
         puts("-h / --help               help (this)");
         puts("-V / --version            version information");
-        puts("-o / --one_time           exit input loop on ESC");
         puts("-s / --scrot              take screen pics");
         puts("-a / --as_user            user name");
         puts("-c / --calendar           calendar app, such as \"orage\"");
         puts("-v n / --verbosity n      verbosity level (default: 0)");
         puts("-f str / --font str       X11 quoted font name string");
         puts("-t name / --theme name    theme name (default: badabing)");
-        puts("\nmail bug reports and suggestions to darkoverlordofdata@gmail.com" );
+        puts("\ngithub: https://github.com/darkoverlordofdata/kitty-cat-lock" );
         exit(0);
     }
     return 0;
@@ -293,7 +287,8 @@ void fn_iterate(Holiday* this)
  * @param user_name
  */
 int application_run(Application* this) {
-    holidays_filter(this->holidays, 20210101, fn_iterate);
+    if (this->holidays != NULL)
+        holidays_filter(this->holidays, 20210101, fn_iterate);
 
     /* how many characters of password to show visually */
     const int pass_num_show = 32;
@@ -445,7 +440,6 @@ void application_event(Application* this, ApplicationEvent evt)
         break;
 
     case ApplicationEscape:
-        if (this->one_time) this->running = false;
         if (this->state == ApplicationDate) break;
         this->state = ApplicationDate;
         this->active = this->top;

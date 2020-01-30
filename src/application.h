@@ -71,15 +71,8 @@ struct Application
     char* buf;
     bool running;
     ApplicationState state;
-    // AppOptions* options;
-    // AppFont* font;
-    // AppImage* image0;
-    // AppImage* image1;
-    // AppDisplay* display;
 
-    /* Application values */
     bool scrot;
-    bool one_time;
     int verbosity;
     char* theme_name;
     char* fontname;

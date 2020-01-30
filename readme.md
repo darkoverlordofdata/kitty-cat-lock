@@ -13,14 +13,39 @@ All of this cool functionality has been stripped out of catlock - it does 2 thin
 * display the date and time
 * accept your password
 
-Bal has 'paw-tested' catlock, and has not been able to do anything to my computer!
+Bal has 'paw-tested' catlock, and has not been able to do anything evil to my computer for a while.
 
 
-oops:
-sudo chmod 755 /usr/local/bin/catlock
-sudo chmod u+s /usr/local/bin/catlock
+## Usage
 
-testing: sudo ./catlock -t badabing  -o -a darko
+    -h / --help               help (this)
+    -V / --version            version information
+    -o / --one_time           exit input loop on ESC
+    -s / --scrot              take screen pics
+    -a / --as_user            user name
+    -c / --calendar           calendar app, such as "orage"
+    -v n / --verbosity n      verbosity level (default: 0)
+    -f str / --font str       X11 quoted font name string
+    -t name / --theme name    theme name (default: badabing)    
+
+## install:
+
+    ./configure
+    ninja -C build
+    sudo ninja -C build install
+    sudo chmod 755 /usr/local/bin/catlock
+    sudo chmod u+s /usr/local/bin/catlock
+
+## testing: 
+
+    sudo ./catlock -a <user>
+
+## todo
+
+display today's holiday along with date:
+
+    sudo ./catlock -a <name> -c orage
+
 
 ![Screenshot](https://github.com/darkoverlordofdata/kitty-cat-lock/raw/master/assets/0.png "Screenshot")
 
