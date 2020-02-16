@@ -512,6 +512,16 @@ char** split2(char* str, char sep1, char sep2) {
 }
 
 
+/**
+ * split
+ *
+ * split string into array with seperator
+ * 
+ * @param str
+ * @param sep1
+ * @param sep2
+ * @returns array
+ */
 char** split(char* str, char sep) {
     int count = 0;
     int len = strlen(str+1);

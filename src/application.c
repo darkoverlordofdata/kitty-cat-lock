@@ -96,7 +96,6 @@ void application_dispose(Application* this) {
  */
 int application_args(Application* this, int argc, char **argv) {
 
-// "-DVERSION=0.1.0 -DDEFAULT_THEME=badabing -DEMAIL==\"beyert AT SYMBOL fastmail DOT SYMBOL net\""
     int longindex = -1, opt, j;
 
     int h = 0, o = 0, v = 0;
@@ -151,8 +150,8 @@ int application_args(Application* this, int argc, char **argv) {
     }
 
     if (v == 1) {
-        printf("catlock-%s, © 2020 Dark Overlord of Data\n", "0.1.0");
-        printf("inspired by metalock-0.8.1, © 2012 Timothy Beyer\n");
+        puts("\ncatlock v0.1.0, © 2020 Dark Overlord of Data");
+        puts("inspired by metalock © 2012 Timothy Beyer");
         exit(0);
     }
 
@@ -162,12 +161,13 @@ int application_args(Application* this, int argc, char **argv) {
         puts("-h / --help               help (this)");
         puts("-V / --version            version information");
         puts("-s / --scrot              take screen pics");
-        puts("-a / --as_user            user name");
+        puts("-a / --as_user            user name to run as");
         puts("-c / --calendar           calendar app, such as \"orage\"");
         puts("-v n / --verbosity n      verbosity level (default: 0)");
-        puts("-f str / --font str       X11 quoted font name string");
+        puts("-f name / --font name     X11 font name");
         puts("-t name / --theme name    theme name (default: badabing)");
-        puts("\ngithub: https://github.com/darkoverlordofdata/kitty-cat-lock" );
+
+        puts("\nhttps://github.com/darkoverlordofdata/kitty-cat-lock" );
         exit(0);
     }
     return 0;
