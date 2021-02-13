@@ -79,7 +79,7 @@ void application_dispose(Application* this) {
     free(this->script[3]);
     free(this->script);
     free(this->calendar);
-    holidays_dispose(this->holidays);
+    // holidays_dispose(this->holidays);
     free(this->user_name);
     free(this->full_name);
     free(this);
@@ -231,7 +231,7 @@ int application_args(Application* this, int argc, char **argv) {
 int application_draw(Application* this) {
     time_t now = time(NULL);
     struct tm *t = localtime(&now);
-    char* instruc = "Enter password";
+    char* instruc = "Enter PIN";
 
     strftime(this->tline, BUFLEN-1, "%l:%M", t);
     strftime(this->dline, BUFLEN-1, "%A, %B %d", t);
@@ -297,7 +297,7 @@ int application_run(Application* this) {
     XEvent ev;
     KeySym ksym;
     int num;
-    static const char *pws = NULL;
+    // static const char *pws = NULL;
     int ticks = 0;
     int inactive = timeout;
 
@@ -328,8 +328,9 @@ int application_run(Application* this) {
             case XK_Return:
                 this->passwd[this->len] = 0;
 
-                if (pws == NULL) pws = get_password();
-                this->running = strcmp(crypt(this->passwd, pws), pws);
+                // if (pws == NULL) pws = get_password();
+                // this->running = strcmp(crypt(this->passwd, pws), pws);
+                this->running = strcmp(this->passwd, "420420");
 
                 if (this->verbosity > 1) { puts("[return]"); }
 
@@ -466,29 +467,29 @@ void application_event(Application* this, ApplicationEvent evt)
 void application_image_files(Application* this)
 {
     if (*this->imgfn == '\0' || file_exists(this->imgfn) < 0)
-        image_filename(this->imgfn, this->user_name, this->theme_name, "bg", "png");
+        image_filename(this->imgfn, this->user_name, this->theme_name, "locked", "png");
     if (*this->imgfn == '\0' || file_exists(this->imgfn) < 0)
-        image_filename(this->imgfn, this->user_name, this->theme_name, "bg", "jpg");
+        image_filename(this->imgfn, this->user_name, this->theme_name, "locked", "jpg");
     if (*this->imgfn == '\0' || file_exists(this->imgfn) < 0)
-        image_filename(this->imgfn, this->user_name, this->theme_name, "bg", "jpeg");
+        image_filename(this->imgfn, this->user_name, this->theme_name, "locked", "jpeg");
     if (*this->imgfn == '\0' || file_exists(this->imgfn) < 0)
-        image_filename(this->imgfn, this->user_name, this->theme_name, "bg", "xpm");
+        image_filename(this->imgfn, this->user_name, this->theme_name, "locked", "xpm");
     if (*this->imgfn == '\0' || file_exists(this->imgfn) < 0)
-        image_filename(this->imgfn, this->user_name, this->theme_name, "bg", "xpm.gz");
+        image_filename(this->imgfn, this->user_name, this->theme_name, "locked", "xpm.gz");
 
     if (this->verbosity > 1)
         printf("background image filename: %s\n", this->imgfn);
 
     if (*this->boximgfn == '\0' || file_exists(this->boximgfn) < 0)
-        image_filename(this->boximgfn, this->user_name, this->theme_name, "box", "png");
+        image_filename(this->boximgfn, this->user_name, this->theme_name, "authorize", "png");
     if (*this->boximgfn == '\0' || file_exists(this->boximgfn) < 0)
-        image_filename(this->boximgfn, this->user_name, this->theme_name, "box", "jpg");
+        image_filename(this->boximgfn, this->user_name, this->theme_name, "authorize", "jpg");
     if (*this->boximgfn == '\0' || file_exists(this->boximgfn) < 0)
-        image_filename(this->boximgfn, this->user_name, this->theme_name, "box", "jpeg");
+        image_filename(this->boximgfn, this->user_name, this->theme_name, "authorize", "jpeg");
     if (*this->boximgfn == '\0' || file_exists(this->boximgfn) < 0)
-        image_filename(this->boximgfn, this->user_name, this->theme_name, "box", "xpm");
+        image_filename(this->boximgfn, this->user_name, this->theme_name, "authorize", "xpm");
     if (*this->boximgfn == '\0' || file_exists(this->boximgfn) < 0)
-        image_filename(this->boximgfn, this->user_name, this->theme_name, "box", "xpm.gz");
+        image_filename(this->boximgfn, this->user_name, this->theme_name, "authorize", "xpm.gz");
 
     if (this->verbosity > 1)
         printf("box image filename: %s\n\n", this->boximgfn);

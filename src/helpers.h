@@ -11,9 +11,9 @@
 void die(const char *errstr, ...);
 int file_exists(char* filename);
 
-#ifndef WITH_BSD_AUTH
-const char * get_password();
-#endif
+// #ifndef WITH_BSD_AUTH
+// const char * get_password();
+// #endif
 
 char* image_filename(char* str, char* user, char* theme, char* name, char* type);
 char* calendar_filename(char* str, char* user, char* name, char* type);

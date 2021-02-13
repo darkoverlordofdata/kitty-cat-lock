@@ -30,7 +30,6 @@
 
 int main(int argc, char **argv) {
 
-    // struct passwd *pw = getpwuid(getuid());
     Application* app = application_new(argc, argv);
 
     if(!(app->disp = XOpenDisplay(0))) { die("cannot open display\n"); }

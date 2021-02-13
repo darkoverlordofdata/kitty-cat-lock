@@ -31,22 +31,22 @@ int file_exists(char* filename) {
  *
  * only run as root
  */
-const char * get_password() {
-    const char *rval;
-    struct passwd *pw;
+// const char * get_password() {
+//     const char *rval;
+//     struct passwd *pw;
 
-    if(geteuid() != 0) {
-        die("cannot retrieve password entry (make sure to suid catlock)\n");
-    }
-    pw = getpwuid(getuid());
-    endpwent();
-    rval =  pw->pw_passwd;
+//     if(geteuid() != 0) {
+//         die("cannot retrieve password entry (make sure to suid catlock)\n");
+//     }
+//     pw = getpwuid(getuid());
+//     endpwent();
+//     rval =  pw->pw_passwd;
 
-    /* drop privileges */
-    if(setgid(pw->pw_gid) < 0 || setuid(pw->pw_uid) < 0)
-        die("cannot drop privileges\n");
-    return rval;
-}
+//     /* drop privileges */
+//     if(setgid(pw->pw_gid) < 0 || setuid(pw->pw_uid) < 0)
+//         die("cannot drop privileges\n");
+//     return rval;
+// }
 
 /**
  * generate the full path to image file
@@ -59,7 +59,7 @@ char* image_filename(char* str, char* user, char* theme, char* name, char* type)
     strcat(str, user);
     strcat(str, "/.local/share/catlock/themes/");
     strcat(str, theme);
-    strcat(str, "/");
+    strcat(str, ".");
     strcat(str, name);
     strcat(str, ".");
     strcat(str, type);

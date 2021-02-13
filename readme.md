@@ -29,12 +29,11 @@ Bal has 'paw-tested' catlock, and has not been able to do anything evil to my co
     -t name / --theme name    theme name (default: badabing)    
 
 ## install:
-
     ./configure
-    ninja -C build
-    sudo ninja -C build install
-    sudo chmod 755 /usr/local/bin/catlock
-    sudo chmod u+s /usr/local/bin/catlock
+    cd build
+    make
+    sudo make install
+
 
 Then add to .config/openbox/rc.xml
 ```
@@ -48,6 +47,11 @@ Then add to .config/openbox/rc.xml
 ## testing: 
 
     sudo ./catlock -a <user>
+
+
+## stop screen blank on freebsd:
+xset -dpms
+xset s off
 
 ## todo
 
