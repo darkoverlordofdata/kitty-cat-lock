@@ -22,17 +22,21 @@ list ( APPEND C_SOURCES src/calendar/calendar.c )
 list ( APPEND C_SOURCES src/application.c )
 list ( APPEND C_SOURCES src/helpers.c )
 list ( APPEND C_SOURCES src/main.c )
+list ( APPEND C_SOURCES src/polyfill.c )
 #
 #   application includes
 #
 set ( INCLUDES "${INCLUDES};/usr/local/include" )
 set ( INCLUDES "${INCLUDES};/usr/local/include/freetype2" )
 set ( INCLUDES "${INCLUDES};/usr/local/include/X11" )
+set ( INCLUDES "${INCLUDES};/usr/include" )
+set ( INCLUDES "${INCLUDES};/usr/include/freetype2" )
+set ( INCLUDES "${INCLUDES};/usr/include/X11" )
 
 set ( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Os -std=c11" )
 
 # links folders 
-link_directories ( /usr/local/lib/ )
+link_directories ( /usr/lib/ )
 
 include_directories ( AFTER ${INCLUDES} )
 

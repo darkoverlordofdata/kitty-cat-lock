@@ -7,6 +7,7 @@
 #include <string.h>
 #include <pwd.h>
 #include <unistd.h>
+#include "polyfill.h"
 
 void die(const char *errstr, ...);
 int file_exists(char* filename);

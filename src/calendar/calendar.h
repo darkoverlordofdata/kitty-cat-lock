@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include <time.h>
+#include "polyfill.h"
 
 typedef struct VCalendar VCalendar;
 typedef struct VEvent VEvent;

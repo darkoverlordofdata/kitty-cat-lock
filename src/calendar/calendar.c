@@ -134,7 +134,7 @@ VCalendar* vcalendar_new(char* path) {
     }
 
     VCalendar* calendar = malloc(sizeof(VCalendar));
-    VEvent* event;
+    VEvent* event = malloc(sizeof(VEvent));
     calendar->event = malloc(sizeof(VEvent*)*count);
     calendar->data = str;
     count = 0;
@@ -152,7 +152,7 @@ VCalendar* vcalendar_new(char* path) {
                 if (strcmp("VCALENDAR", nodes[i].value) == 0) {
                 } else exit(99);
                 break;
-            case 2: //  VEVENT
+            case 2: //  VEVENT 
                 if (strcmp("VEVENT", nodes[i].value) == 0) {
                     event = calendar->event[count++] = malloc(sizeof(VEvent));
                 } else exit(99);
@@ -431,7 +431,10 @@ char* rdbuf(char* path)
 
     if (buf != NULL)
     {
-        fread(buf, s, 1, f);
+        if (fread(buf, s, 1, f) != 1) {
+            fputs ("Reading error",stderr); 
+            exit (1);
+        }
         return buf;
     }
     return buf;

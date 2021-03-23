@@ -10,7 +10,7 @@ static const struct option longopts[] = {
     {"version", no_argument, NULL, 'V'},
     {"scrot", no_argument, NULL, 's'},
     {"calendar", required_argument, NULL, 'c'},
-    {"as_user", required_argument, NULL, 'a'},
+    {"pin", required_argument, NULL, 'p'},
     {"verbosity", required_argument, NULL, 'v'},
     {"font", required_argument, NULL, 'f'},
     {"theme", required_argument, NULL, 't'},
@@ -96,9 +96,9 @@ void application_dispose(Application* this) {
  */
 int application_args(Application* this, int argc, char **argv) {
 
-    int longindex = -1, opt, j;
+    int longindex = -1, opt;
 
-    int h = 0, o = 0, v = 0;
+    int h = 0, v = 0;
 
     this->verbosity = 0;
     this->theme_name = strdup("badabing");
@@ -107,9 +107,9 @@ int application_args(Application* this, int argc, char **argv) {
 
     if (this->verbosity > 1) { puts("process command line arguments...\n"); }
 
-    while ((opt = getopt_long(argc, argv, "oshVt:v:f:a:c:", longopts, &longindex))
+    while ((opt = getopt_long(argc, argv, "oshVt:v:f:a:c:p:", longopts, &longindex))
           != -1) {
-        j = 0;
+        // j = 0;
         switch (opt) {
         case 's':
             this->scrot = true;
@@ -123,12 +123,15 @@ int application_args(Application* this, int argc, char **argv) {
         case 'c':
             this->calendar = strdup(optarg);
             break;
-        case 'C':
-            o = 1;
+        case 'p':
+            this->pin = strdup(optarg);
             break;
-        case 'a':
-            this->user_name = strdup(optarg);
-            break;
+        // case 'C':
+        //     o = 1;
+        //     break;
+        // case 'a':
+        //     this->user_name = strdup(optarg);
+        //     break;
         case 'f':
             application_fonts(this, optarg);
             break;
@@ -161,7 +164,6 @@ int application_args(Application* this, int argc, char **argv) {
         puts("-h / --help               help (this)");
         puts("-V / --version            version information");
         puts("-s / --scrot              take screen pics");
-        puts("-a / --as_user            user name to run as");
         puts("-c / --calendar           calendar app, such as \"orage\"");
         puts("-v n / --verbosity n      verbosity level (default: 0)");
         puts("-f name / --font name     X11 font name");
@@ -328,9 +330,13 @@ int application_run(Application* this) {
             case XK_Return:
                 this->passwd[this->len] = 0;
 
-                // if (pws == NULL) pws = get_password();
-                // this->running = strcmp(crypt(this->passwd, pws), pws);
-                this->running = strcmp(this->passwd, "420420");
+                if (this->pin == NULL) { 
+                    puts("No Pin!\n"); 
+                    this->running = 0;
+                }
+                else {
+                    this->running = strcmp(this->passwd, this->pin);
+                }
 
                 if (this->verbosity > 1) { puts("[return]"); }
 
@@ -374,6 +380,11 @@ int application_run(Application* this) {
                     if (strlen(this->pline) < pass_num_show) { strcat(this->pline, "*"); }
                     int new_pline_len = strlen(this->pline);
                     application_draw(this);
+
+                    if (this->pin != NULL) { 
+                        this->running = strcmp(this->passwd, this->pin);
+                    }
+
                     if (this->verbosity > 1 && new_pline_len < pass_num_show) { printf("*"); }
                 }
                 else if (this->len + num >= BUFLEN) {
@@ -494,9 +505,13 @@ void application_image_files(Application* this)
     if (this->verbosity > 1)
         printf("box image filename: %s\n\n", this->boximgfn);
 
-    if (file_exists(this->imgfn) < 0 || file_exists(this->boximgfn) < 0) {
+    if (file_exists(this->imgfn) < 0) {
         printf("image %s does not exist\n", this->imgfn);
         exit(0);
+    }
 
+    if (file_exists(this->boximgfn) < 0) {
+        printf("image %s does not exist\n", this->boximgfn);
+        exit(0);
     }
 }

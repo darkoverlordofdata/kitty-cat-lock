@@ -15,76 +15,52 @@ All of this cool functionality has been stripped out of catlock - it does 2 thin
 
 Bal has 'paw-tested' catlock, and has not been able to do anything evil to my computer for a while.
 
+based on: http://chiselapp.com/user/beyert/repository/metalock/index
+
 
 ## Usage
 
     -h / --help               help (this)
     -V / --version            version information
-    -o / --one_time           exit input loop on ESC
     -s / --scrot              take screen pics
-    -a / --as_user            user name
+    -p / --pin                pin to unlock screen
     -c / --calendar           calendar app, such as "orage"
     -v n / --verbosity n      verbosity level (default: 0)
     -f name / --font name     X11 font name 
     -t name / --theme name    theme name (default: badabing)    
 
 ## install:
-    ./configure
-    cd build
-    make
-    sudo make install
+```
+./configure
+cd build
+make
+sudo make install
+```
+for standalone use:
+```
+bash wallpaper/copy.sh ~/Pictures/MyWallpaper.jpg screen_width screen_height
+```
 
-
-Then add to .config/openbox/rc.xml
+Then add to keybindings, example .config/openbox/rc.xml. 
 ```
 <keybind key="W-l">
     <action name="Execute">
-    <command>catlock</command>
+    <command>catlock --pin 12345 --theme wallpaper</command>
     </action>
 </keybind>
 ```
 
-## testing: 
-
-    sudo ./catlock -a <user>
-
 
 ## known issues
-
-This project is a wip and prototype for my github project catlock. But it is also my daily driver for my FreeBSD desktop, so it should be working. Still, there are some rough spots.
-
-* change from password to pin
-
-    This makes it more like my smart phone or windows desktop. I use the same pin on all devices. You can give someone the pin without revealing your password.
-
-    Incomplete change. Current hardcoded pin is '420420'. Requires password.
-    You can change the pin in src/application.c line 333. 
-    planned change is new --pin flag.
-
-* image /home/<user>/.local/share/catlock/themes/badabing.locked.jpg does not exist
-
-    this program doesn't set up the environment. You need a folder "~/.local/share/catlock/themes" with 2 images (they can be the same) - locked.jpg and authorize.jpg, png should also work. They should be large enough to cover your screen. On my computer, these images are maintained by another program, 'badabing', but I can also do this manually.
 
 * segmentation fault when specifying a calendar
 
     example:
-    catlock -c /home/<user>/.local/share/catlock/us_en.ics
-
-
-* flags not working:
-
-    -a or --as_user
-        gets the 'image ... does not exist' error.
+    catlock --calendar /home/<user>/.local/share/catlock/us_en.ics
 
 ## stop screen blank on freebsd:
-xset -dpms
-xset s off
-
-## todo
-
-display today's holiday along with date:
-
-    sudo ./catlock -a <name> -c orage
+    xset -dpms
+    xset s off
 
 
 ![Screenshot](https://github.com/darkoverlordofdata/kitty-cat-lock/raw/master/assets/0.png "Screenshot")

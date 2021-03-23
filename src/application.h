@@ -21,6 +21,7 @@
 
 #include "helpers.h"
 #include "calendar/calendar.h"
+#include "polyfill.h"
 
 /**
  * Application interface
@@ -66,6 +67,7 @@ struct Application
     char** script;
     char* user_name;
     char* full_name;
+    char* pin;
     char* passwd;
     unsigned int len;
     char* buf;
