@@ -9,7 +9,7 @@
             "type": "gdb",
             "request": "launch",
             "target": "./catlock",
-            "arguments": "-a darko",
+            "arguments": "--theme wallpaper --pin 123",
             "cwd": "${workspaceRoot}",
             "valuesFormatting": "parseText"
         }

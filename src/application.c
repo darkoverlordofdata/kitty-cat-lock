@@ -2,6 +2,10 @@
 #include "calendar/calendar.h"
 
 #define BUFLEN 256
+
+// guarded free
+#define FREE_IF(ptr) if (ptr != NULL) free(ptr)
+
 /**
  * Decode process arguments
  */
@@ -50,6 +54,7 @@ Application* application_new(int argc, char **argv) {
     this->script[0] = strdup("/usr/local/bin/scrot");
     this->script[1] = strdup("-d");
     this->script[2] = strdup("1");
+    this->script[3] = NULL;
     return this;
 }
 
@@ -59,30 +64,31 @@ Application* application_new(int argc, char **argv) {
  * @param this
  */
 void application_dispose(Application* this) {
-    free(this->uline);
-    free(this->pline);
-    free(this->tline);
-    free(this->dline);
-    free(this->imgfn);
-    free(this->boximgfn);
-    free(this->theme_name);
-    free(this->fontname);
-    free(this->fontname_small);
-    free(this->fontname_name);
-    free(this->fontname_pwd);
-    free(this->fontname_date);
-    free(this->fontname_time);
-    free(this->buf);
-    free(this->passwd);
-    free(this->script[0]);
-    free(this->script[2]);
-    free(this->script[3]);
-    free(this->script);
-    free(this->calendar);
+    FREE_IF(this->uline);
+    FREE_IF(this->pline);
+    FREE_IF(this->tline);
+    FREE_IF(this->dline);
+    FREE_IF(this->imgfn);
+    FREE_IF(this->boximgfn);
+    FREE_IF(this->theme_name);
+    FREE_IF(this->fontname);
+    FREE_IF(this->fontname_small);
+    FREE_IF(this->fontname_name);
+    FREE_IF(this->fontname_pwd);
+    FREE_IF(this->fontname_date);
+    FREE_IF(this->fontname_time);
+    FREE_IF(this->buf);
+    FREE_IF(this->passwd);
+    FREE_IF(this->script[0]);
+    FREE_IF(this->script[1]);
+    FREE_IF(this->script[2]);
+    FREE_IF(this->script);
+    FREE_IF(this->calendar);
     // holidays_dispose(this->holidays);
-    free(this->user_name);
-    free(this->full_name);
-    free(this);
+    FREE_IF(this->user_name);
+    FREE_IF(this->full_name);
+    FREE_IF(this->pin);
+    FREE_IF(this);
 }
 
 /**
@@ -109,7 +115,6 @@ int application_args(Application* this, int argc, char **argv) {
 
     while ((opt = getopt_long(argc, argv, "oshVt:v:f:a:c:p:", longopts, &longindex))
           != -1) {
-        // j = 0;
         switch (opt) {
         case 's':
             this->scrot = true;
@@ -126,16 +131,11 @@ int application_args(Application* this, int argc, char **argv) {
         case 'p':
             this->pin = strdup(optarg);
             break;
-        // case 'C':
-        //     o = 1;
-        //     break;
-        // case 'a':
-        //     this->user_name = strdup(optarg);
-        //     break;
         case 'f':
             application_fonts(this, optarg);
             break;
         case 't':
+            FREE_IF(this->theme_name);
             this->theme_name = strdup(optarg);
             break;
         case 'v':
@@ -186,12 +186,12 @@ int application_args(Application* this, int argc, char **argv) {
   void application_fonts(Application* this, char* name)
   {
 
-    if (this->fontname) free(this->fontname);
-    if (this->fontname_small) free(this->fontname_small);
-    if (this->fontname_name) free(this->fontname_name);
-    if (this->fontname_name) free(this->fontname_pwd);
-    if (this->fontname_time) free(this->fontname_time);
-    if (this->fontname_date) free(this->fontname_date);
+    FREE_IF(this->fontname);
+    FREE_IF(this->fontname_small);
+    FREE_IF(this->fontname_name);
+    FREE_IF(this->fontname_pwd);
+    FREE_IF(this->fontname_time);
+    FREE_IF(this->fontname_date);
 
     this->fontname = strdup(name);
 
@@ -296,7 +296,7 @@ int application_run(Application* this) {
     const int pass_num_show = 32;
     const int timeout = 1000;
     
-    XEvent ev;
+    XEvent ev = { };
     KeySym ksym;
     int num;
     // static const char *pws = NULL;
@@ -462,6 +462,7 @@ void application_event(Application* this, ApplicationEvent evt)
     XDefineCursor(this->disp, this->active, this->invisible);
     XMapRaised(this->disp, this->active);
     // if the font does not exist, then fallback to fixed and give warning 
+    FREE_IF(this->draw);
     this->draw = XftDrawCreate(this->disp, this->active, DefaultVisual(this->disp, this->screen), this->cm);
     // Display the pixmaps, if applicable 
     XClearWindow(this->disp, this->active);

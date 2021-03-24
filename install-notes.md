@@ -4,6 +4,8 @@
 
 ## PINs
 
+The impetus for this change is that the password check no longer works on Linux, but still works on BSD. So why use password? Why not a PIN?
+
 This makes it more like my smart phone or windows desktop. I use the same pin on all devices. You can give someone the pin without revealing your password. Without a pin, the return key will unlock the screen.
 
 to lock with a pin: 

@@ -7,3 +7,4 @@
 * 0.2 - 03/23/2021
 
     * make gcc compatible with strdup polyfill
+    * fix bug cause: freeing undefined memory

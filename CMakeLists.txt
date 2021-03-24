@@ -34,6 +34,7 @@ set ( INCLUDES "${INCLUDES};/usr/include/freetype2" )
 set ( INCLUDES "${INCLUDES};/usr/include/X11" )
 
 set ( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Os -std=c11" )
+# set ( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -O0 -g -std=c11" )
 
 # links folders 
 link_directories ( /usr/lib/ )
