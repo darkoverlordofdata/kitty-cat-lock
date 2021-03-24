@@ -335,7 +335,10 @@ int application_run(Application* this) {
                     this->running = 0;
                 }
                 else {
-                    this->running = strcmp(this->passwd, this->pin);
+                    if (this->pin != NULL && this->passwd != NULL) { 
+                        this->running = strcmp(this->passwd, this->pin);
+                    }
+                    // this->running = strcmp(this->passwd, this->pin);
                 }
 
                 if (this->verbosity > 1) { puts("[return]"); }
@@ -381,7 +384,7 @@ int application_run(Application* this) {
                     int new_pline_len = strlen(this->pline);
                     application_draw(this);
 
-                    if (this->pin != NULL) { 
+                    if (this->pin != NULL && this->passwd != NULL) { 
                         this->running = strcmp(this->passwd, this->pin);
                     }
 
